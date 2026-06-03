@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const crypto = require("crypto");
+
 if (process.env.CURSOR_INSECURE_TLS === "1") {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
@@ -10,8 +12,56 @@ const path = require("path");
 const API_BASE = "https://api.cursor.com";
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.CURSOR_API_KEY;
+const AUTH_USER = process.env.AUTH_USER;
+const AUTH_PASSWORD = process.env.AUTH_PASSWORD;
 // Cursor "Auto" routing — use id "auto" (alias of "default"). Omitting model uses account default (e.g. Opus).
 const DEFAULT_MODEL_ID = process.env.CURSOR_DEFAULT_MODEL || "auto";
+
+function timingSafeEqual(a, b) {
+  const aBuf = Buffer.from(a);
+  const bBuf = Buffer.from(b);
+  if (aBuf.length !== bBuf.length) {
+    crypto.timingSafeEqual(aBuf, aBuf);
+    return false;
+  }
+  return crypto.timingSafeEqual(aBuf, bBuf);
+}
+
+function requireBasicAuth(req, res, next) {
+  if (!AUTH_USER || !AUTH_PASSWORD) {
+    return next();
+  }
+
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith("Basic ")) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="Cursor Chat"');
+    return res.status(401).send("Authentication required");
+  }
+
+  let decoded;
+  try {
+    decoded = Buffer.from(header.slice(6), "base64").toString("utf8");
+  } catch {
+    res.setHeader("WWW-Authenticate", 'Basic realm="Cursor Chat"');
+    return res.status(401).send("Authentication required");
+  }
+
+  const colon = decoded.indexOf(":");
+  if (colon === -1) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="Cursor Chat"');
+    return res.status(401).send("Authentication required");
+  }
+
+  const user = decoded.slice(0, colon);
+  const pass = decoded.slice(colon + 1);
+
+  if (timingSafeEqual(user, AUTH_USER) && timingSafeEqual(pass, AUTH_PASSWORD)) {
+    return next();
+  }
+
+  res.setHeader("WWW-Authenticate", 'Basic realm="Cursor Chat"');
+  return res.status(401).send("Invalid credentials");
+}
 
 function resolveModel(modelId) {
   const id = (modelId || DEFAULT_MODEL_ID).trim();
@@ -27,6 +77,7 @@ if (!API_KEY) {
 }
 
 const app = express();
+app.use(requireBasicAuth);
 app.use(express.json({ limit: "2mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -218,5 +269,7 @@ app.post("/api/chat/new", (_req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Cursor Chat running at http://localhost:${PORT}`);
+  const authNote =
+    AUTH_USER && AUTH_PASSWORD ? " (basic auth enabled)" : " (no basic auth — set AUTH_USER and AUTH_PASSWORD in .env)";
+  console.log(`Cursor Chat running at http://localhost:${PORT}${authNote}`);
 });

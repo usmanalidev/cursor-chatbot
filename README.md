@@ -17,7 +17,11 @@ npm install
 ```
 CURSOR_API_KEY=your_key_here
 PORT=3000
+AUTH_USER=your_username
+AUTH_PASSWORD=your_password
 ```
+
+When `AUTH_USER` and `AUTH_PASSWORD` are set, the browser will prompt for credentials before anyone can open the chat or call the API.
 
 ## Run
 
@@ -38,7 +42,8 @@ Open **http://localhost:3000** in your browser.
 
 ## Security
 
-- Never commit `.env` or share your API key publicly.
+- Never commit `.env` or share your API key or `AUTH_PASSWORD` publicly.
+- Basic auth protects the UI over HTTP; use HTTPS if you expose this beyond localhost.
 - If this key was exposed, rotate it in [Cursor Dashboard → API Keys](https://cursor.com/dashboard/api).
 
 ## Corporate network / SSL errors
