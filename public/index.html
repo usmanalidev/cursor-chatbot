@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursor Chat</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo">◇</span>
+        <span>Cursor Chat</span>
+      </div>
+      <button type="button" id="newChatBtn" class="btn-secondary">+ New chat</button>
+      <div class="sidebar-section">
+        <label for="modelSelect">Model</label>
+        <select id="modelSelect">
+          <option value="auto">Auto</option>
+        </select>
+      </div>
+      <div id="statusBar" class="status-bar">Connecting…</div>
+    </aside>
+
+    <main class="main">
+      <div id="messages" class="messages">
+        <div class="welcome">
+          <h1>How can I help you today?</h1>
+          <p>Powered by Cursor Cloud Agents API</p>
+        </div>
+      </div>
+
+      <form id="chatForm" class="composer">
+        <textarea
+          id="promptInput"
+          rows="1"
+          placeholder="Message Cursor…"
+          autocomplete="off"
+        ></textarea>
+        <button type="submit" id="sendBtn" class="btn-primary" aria-label="Send">
+          ↑
+        </button>
+      </form>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.9/dist/purify.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
