@@ -15,9 +15,16 @@
       </div>
       <button type="button" id="newChatBtn" class="btn-secondary">+ New chat</button>
       <div class="sidebar-section">
+        <label class="checkbox-row">
+          <input type="checkbox" id="fastModeToggle" checked />
+          Fast responses
+        </label>
+        <p class="sidebar-hint">Uses Composer 2.5 Fast for text. Turn off for Auto/Opus quality.</p>
+      </div>
+      <div class="sidebar-section">
         <label for="modelSelect">Model</label>
         <select id="modelSelect">
-          <option value="auto">Auto</option>
+          <option value="composer-2.5">Composer 2.5</option>
         </select>
       </div>
       <div id="statusBar" class="status-bar">Connecting…</div>
@@ -27,15 +34,26 @@
       <div id="messages" class="messages">
         <div class="welcome">
           <h1>How can I help you today?</h1>
-          <p>Powered by Cursor Cloud Agents API</p>
+          <p>Attach images to edit or analyze. Powered by Cursor Cloud Agents API</p>
         </div>
       </div>
 
+      <div id="attachPreview" class="attach-preview" hidden></div>
       <form id="chatForm" class="composer">
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/png,image/jpeg,image/gif,image/webp"
+          multiple
+          hidden
+        />
+        <button type="button" id="attachBtn" class="btn-icon" aria-label="Attach image" title="Attach image">
+          🖼
+        </button>
         <textarea
           id="promptInput"
           rows="1"
-          placeholder="Message Cursor…"
+          placeholder="Message Cursor… (attach images to edit)"
           autocomplete="off"
         ></textarea>
         <button type="submit" id="sendBtn" class="btn-primary" aria-label="Send">

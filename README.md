@@ -55,6 +55,7 @@ Redeploy after saving environment variables.
 
 ## How it works
 
+- **Image upload** — attach up to 5 images (PNG, JPEG, GIF, WebP). Paste from clipboard or use the image button. Modified outputs are fetched from agent **artifacts** and shown under the reply.
 - **New chat** creates a no-repo Cloud Agent and runs your prompt.
 - **Follow-up messages** reuse the same agent (conversation context).
 - Responses stream in real time via the API SSE endpoint.
@@ -81,4 +82,6 @@ Only use this on trusted networks. Prefer installing your company root CA into N
 ## Notes
 
 - Cloud Agents are designed for coding tasks; for pure Q&A they still work but may occasionally use tools.
-- First responses can take longer while the agent VM starts.
+- First responses can take longer while the agent VM starts. Image edits may take several minutes; `AGENT_WAIT_MS` (default 5 minutes) controls server wait time. On Vercel Pro, `maxDuration` is set to 300s in `vercel.json`.
+- **Fast responses** (sidebar, on by default) uses **Composer 2.5 Fast** for text-only messages — much quicker than Auto/Opus. Turn it off for higher quality or when using images. Start a **new chat** after changing fast mode or model.
+- The **first message** in a new chat is slowest (Cloud Agent VM startup). Follow-ups in the same chat are faster.
