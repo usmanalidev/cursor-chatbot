@@ -71,7 +71,7 @@ function resolveModel(modelId) {
   return { id };
 }
 
-if (!API_KEY) {
+if (!API_KEY && !process.env.VERCEL) {
   console.error("Missing CURSOR_API_KEY in .env");
   process.exit(1);
 }
@@ -268,8 +268,14 @@ app.post("/api/chat/new", (_req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(PORT, () => {
-  const authNote =
-    AUTH_USER && AUTH_PASSWORD ? " (basic auth enabled)" : " (no basic auth — set AUTH_USER and AUTH_PASSWORD in .env)";
-  console.log(`Cursor Chat running at http://localhost:${PORT}${authNote}`);
-});
+module.exports = app;
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    const authNote =
+      AUTH_USER && AUTH_PASSWORD
+        ? " (basic auth enabled)"
+        : " (no basic auth — set AUTH_USER and AUTH_PASSWORD in .env)";
+    console.log(`Cursor Chat running at http://localhost:${PORT}${authNote}`);
+  });
+}

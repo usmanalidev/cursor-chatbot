@@ -31,6 +31,28 @@ npm start
 
 Open **http://localhost:3000** in your browser.
 
+## Deploy on Vercel
+
+Vercel serves the `public/` folder directly from its CDN, so **Express basic auth in `server.js` does not run** for the HTML/JS unless you also use edge middleware.
+
+This repo includes:
+
+- `middleware.js` — basic auth on Vercel **before** static files are returned
+- `api/index.js` + `vercel.json` — API routes and optional full-app routing through Express
+
+**Required:** In the Vercel project → **Settings → Environment Variables**, add (for Production, Preview, and Development):
+
+| Variable | Value |
+|----------|--------|
+| `CURSOR_API_KEY` | Your Cursor API key |
+| `AUTH_USER` | Your login username |
+| `AUTH_PASSWORD` | Your login password |
+| `CURSOR_INSECURE_TLS` | `1` only if you need it (corporate proxy) |
+
+`.env` is **not** uploaded to Vercel. If these variables are missing, auth is skipped and the site stays public.
+
+Redeploy after saving environment variables.
+
 ## How it works
 
 - **New chat** creates a no-repo Cloud Agent and runs your prompt.
